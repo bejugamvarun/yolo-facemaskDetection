@@ -1,0 +1,6 @@
+*.weights
+__pycache__
+checkpoint
+*.tf.index
+*.tf.*
+.idea/
