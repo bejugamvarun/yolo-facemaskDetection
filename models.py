@@ -1,6 +1,6 @@
-from absl import flags
 import numpy as np
 import tensorflow as tf
+from absl import flags
 from tensorflow.keras import Model
 from tensorflow.keras.layers import (
     Add,
@@ -14,11 +14,12 @@ from tensorflow.keras.layers import (
     ZeroPadding2D,
     BatchNormalization,
 )
-from tensorflow.keras.regularizers import l2
 from tensorflow.keras.losses import (
     binary_crossentropy,
     sparse_categorical_crossentropy
 )
+from tensorflow.keras.regularizers import l2
+
 from convert import broadcast_iou
 
 flags.DEFINE_integer('yolo_max_boxes', 100, 'maximum number of boxes per image')
@@ -29,11 +30,6 @@ yolo_anchors = np.array([(10, 13), (16, 30), (33, 23), (30, 61), (62, 45),
                          (59, 119), (116, 90), (156, 198), (373, 326)],
                         np.float32) / 416
 yolo_anchor_masks = np.array([[6, 7, 8], [3, 4, 5], [0, 1, 2]])
-
-yolo_tiny_anchors = np.array([(10, 14), (23, 27), (37, 58),
-                              (81, 82), (135, 169), (344, 319)],
-                             np.float32) / 416
-yolo_tiny_anchor_masks = np.array([[3, 4, 5], [0, 1, 2]])
 
 
 def DarknetConv(x, filters, size, strides=1, batch_norm=True):
@@ -118,22 +114,22 @@ def YoloConv(filters, name=None):
     return yolo_conv
 
 
-def YoloConvTiny(filters, name=None):
-    def yolo_conv(x_in):
-        if isinstance(x_in, tuple):
-            inputs = Input(x_in[0].shape[1:]), Input(x_in[1].shape[1:])
-            x, x_skip = inputs
-
-            # concat with skip connection
-            x = DarknetConv(x, filters, 1)
-            x = UpSampling2D(2)(x)
-            x = Concatenate()([x, x_skip])
-        else:
-            x = inputs = Input(x_in.shape[1:])
-            x = DarknetConv(x, filters, 1)
-        return Model(inputs, x, name=name)(x_in)
-
-    return yolo_conv
+# def YoloConvTiny(filters, name=None):
+#     def yolo_conv(x_in):
+#         if isinstance(x_in, tuple):
+#             inputs = Input(x_in[0].shape[1:]), Input(x_in[1].shape[1:])
+#             x, x_skip = inputs
+#
+#             # concat with skip connection
+#             x = DarknetConv(x, filters, 1)
+#             x = UpSampling2D(2)(x)
+#             x = Concatenate()([x, x_skip])
+#         else:
+#             x = inputs = Input(x_in.shape[1:])
+#             x = DarknetConv(x, filters, 1)
+#         return Model(inputs, x, name=name)(x_in)
+#
+#     return yolo_conv
 
 
 def YoloOutput(filters, anchors, classes, name=None):
