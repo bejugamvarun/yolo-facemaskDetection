@@ -13,15 +13,15 @@ def transform_images(x_train, size):
     return x_train
 
 
-flags.DEFINE_string('classes', './data/coco.names', 'path to classes file')
-flags.DEFINE_string('weights', './checkpoints/yolov3.tf',
+flags.DEFINE_string('classes', './data/faceMask.names', 'path to classes file')
+flags.DEFINE_string('weights', './tf_ckpts/',
                     'path to weights file')
 flags.DEFINE_integer('size', 416, 'resize images to')
 flags.DEFINE_string('video', '0',
                     'path to video file or number for WebCam')
 flags.DEFINE_string('output', None, 'path to output video')
 flags.DEFINE_string('output_format', 'XVID', 'codec used in VideoWriter when saving video to file')
-flags.DEFINE_integer('num_classes', 80, 'number of classes in the model')
+flags.DEFINE_integer('num_classes', 3, 'number of classes in the model')
 
 
 def main(_argv):
@@ -30,8 +30,12 @@ def main(_argv):
         tf.config.experimental.set_memory_growth(physical_device, True)
 
     yolo = YoloV3(classes=FLAGS.num_classes)
+    ckpt = tf.train.Checkpoint(step=tf.Variable(1), model=yolo)
+    latest = tf.train.latest_checkpoint('./tf_ckpts/')
+    ckpt.restore(latest)
+    yolo = ckpt.model
 
-    yolo.load_weights(FLAGS.weights)
+    # yolo.load_weights(FLAGS.weights)
     logging.info('weights loaded')
 
     class_names = [c.strip() for c in open(FLAGS.classes).readlines()]
