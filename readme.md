@@ -1,6 +1,6 @@
 # Face Mask Detector
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/varun0603/yolo-facemaskDetection/blob/master/YoloFaceMaskDetector.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/varun0603/yolo-facemaskDetection/blob/master/YoloFaceMaskDetector.ipynb)
 
 * Implemented You Only Look Once (YOLO) algorithm in tensorflow 2.0
 * Used Darknet yolo weights trained on COCO dataset which has 80 classes
