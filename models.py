@@ -22,7 +22,7 @@ from tensorflow.keras.regularizers import l2
 
 from convert import broadcast_iou
 
-flags.DEFINE_integer('yolo_max_boxes', 100, 'maximum number of boxes per image')
+flags.DEFINE_integer('yolo_max_boxes', 150, 'maximum number of boxes per image')
 flags.DEFINE_float('yolo_iou_threshold', 0.5, 'iou threshold')
 flags.DEFINE_float('yolo_score_threshold', 0.5, 'score threshold')
 
@@ -112,24 +112,6 @@ def YoloConv(filters, name=None):
         return Model(inputs, x, name=name)(x_in)
 
     return yolo_conv
-
-
-# def YoloConvTiny(filters, name=None):
-#     def yolo_conv(x_in):
-#         if isinstance(x_in, tuple):
-#             inputs = Input(x_in[0].shape[1:]), Input(x_in[1].shape[1:])
-#             x, x_skip = inputs
-#
-#             # concat with skip connection
-#             x = DarknetConv(x, filters, 1)
-#             x = UpSampling2D(2)(x)
-#             x = Concatenate()([x, x_skip])
-#         else:
-#             x = inputs = Input(x_in.shape[1:])
-#             x = DarknetConv(x, filters, 1)
-#         return Model(inputs, x, name=name)(x_in)
-#
-#     return yolo_conv
 
 
 def YoloOutput(filters, anchors, classes, name=None):

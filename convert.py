@@ -14,7 +14,14 @@ YOLOV3_LAYER_LIST = [
 ]
 
 
-def load_darknet_weights(model, weights_file, tiny=False):
+def load_darknet_weights(model: tf.keras.Model, weights_file):
+    """
+    A function which takes raw darknet weights file and converts it to tensorflow Model using tf.train.Checkpoint api
+
+    :param model: tf.keras.Model with the YOLOv3 architecture
+    :param weights_file: pretrained Darknet weights file
+    :return: returns void with weights converted to tensorflow checkpoint format
+    """
     wf = open(weights_file, 'rb')
     major, minor, revision, seen, _ = np.fromfile(wf, dtype=np.int32, count=5)
 
@@ -65,6 +72,16 @@ def load_darknet_weights(model, weights_file, tiny=False):
 
 
 def broadcast_iou(box_1, box_2):
+    """
+    broadcast_iou(box_1: (..., (x1, y1, x2, y2)), box_2: (N, (x1, y1, x2, y2)))
+
+    A function to broadcast intersection over union
+
+
+    :param box_1: First box
+    :param box_2: Second box
+    :return: returns a float value of intersection over union area between two boxes
+    """
     # box_1: (..., (x1, y1, x2, y2))
     # box_2: (N, (x1, y1, x2, y2))
 
@@ -88,7 +105,19 @@ def broadcast_iou(box_1, box_2):
     return int_area / (box_1_area + box_2_area - int_area)
 
 
-def draw_outputs(img, outputs, class_names):
+def draw_outputs(img, outputs: tuple, class_names: list):
+    """
+    draw_outputs(image, (boxes, objectness, classes, nums), class_names)
+
+    A function which takes the output the inference model and draw rectangle boxes to the image
+    with the predicted bounding boxes of the objects
+
+
+    :param img: input image
+    :param outputs: predicted bounding boxes and number of boxes from the Model
+    :param class_names: list of Class names used during training
+    :return: returns an image with plotted boxes and class name of each object
+    """
     boxes, objectness, classes, nums = outputs
     boxes, objectness, classes, nums = boxes[0], objectness[0], classes[0], nums[0]
     wh = np.flip(img.shape[0:2])
@@ -102,7 +131,17 @@ def draw_outputs(img, outputs, class_names):
     return img
 
 
-def draw_labels(x, y, class_names):
+def draw_labels(x, y, class_names: list):
+    """
+    draw_labels(x: np.array, classes_names: list)
+
+    A function which takes image and predicted classes and draws the predictions on an image
+
+    :param x: input image
+    :param y: Tensor of predicted boxes and classes
+    :param class_names: list of class names
+    :return: returns an image with drawn labels of each box predicted by the model
+    """
     img = x.numpy()
     boxes, classes = tf.split(y, (4, 1), axis=-1)
     classes = classes[..., 0]
@@ -117,7 +156,16 @@ def draw_labels(x, y, class_names):
     return img
 
 
-def freeze_all(model, frozen=True):
+def freeze_all(model: tf.keras.Model, frozen: bool = True):
+    """
+    freeze_all(model: tf.Keras.Model, frozen: boolean)
+
+    A function which takes tf Model and makes specified layers non trainable for transfer learning
+
+    :param model: Trained tensorflow model
+    :param frozen: boolean to freeze the model layers
+    :return: returns void with the specified model layers are made non trainable
+    """
     model.trainable = not frozen
     if isinstance(model, tf.keras.Model):
         for l in model.layers:

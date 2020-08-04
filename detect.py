@@ -34,8 +34,6 @@ def main(_argv):
     latest = tf.train.latest_checkpoint('./tf_ckpts/')
     ckpt.restore(latest)
     yolo = ckpt.model
-
-    # yolo.load_weights(FLAGS.weights)
     logging.info('weights loaded')
 
     class_names = [c.strip() for c in open(FLAGS.classes).readlines()]
