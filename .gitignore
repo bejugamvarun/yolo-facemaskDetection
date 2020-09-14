@@ -1,4 +1,5 @@
 *.weights
+.ipynb_checkpoints/
 __pycache__
 checkpoint
 *.tf.index
