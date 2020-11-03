@@ -177,7 +177,7 @@ def yolo_nms(outputs, anchors, masks, classes):
     return boxes, scores, classes, valid_detections
 
 
-def YoloV3(size=None, channels=3, anchors=yolo_anchors, masks=yolo_anchor_masks, classes=80, training=False):
+def YoloV3(size=None, channels=3, anchors=yolo_anchors, masks=yolo_anchor_masks, classes=3, training=False):
     x = inputs = Input([size, size, channels], name='input')
 
     x_36, x_61, x = Darknet(name='yolo_darknet')(x)
@@ -206,7 +206,7 @@ def YoloV3(size=None, channels=3, anchors=yolo_anchors, masks=yolo_anchor_masks,
     return Model(inputs, outputs, name='yolov3')
 
 
-def YoloLoss(anchors, classes=80, ignore_thresh=0.5):
+def YoloLoss(anchors, classes=3, ignore_thresh=0.5):
     def yolo_loss(y_true, y_pred):
         # 1. transform all pred outputs
         # y_pred: (batch_size, grid, grid, anchors, (x, y, w, h, obj, ...cls))
